@@ -8,15 +8,15 @@
       content="U-GWwZOKUY-FqRJYQu4ealLEaLnFK4WTKgDI7SCbS3E"
     />
     <title>
-      ClipQuickly - AI-Powered URL Shortener for Niche Content & SEO
+      ClipQuickly - Smart Link & Content Organizer for Marketers & Creators
     </title>
     <meta
       name="description"
-      content="ClipQuickly helps content creators and marketers shorten URLs, extract key insights, and boost SEO for niche content. Get summarized links and high CPC keyword suggestions."
+      content="Organize your links, summarize content, and extract key keywords for marketing, SEO, and personal knowledge management. QuickClip Notes helps you curate and share smart snippets."
     />
     <meta
       name="keywords"
-      content="URL shortener, link shortener, SEO URL, content summarizer, keyword extractor, niche content, marketing tools, online tools, quick link"
+      content="link organizer, content curator, content summarizer tool, keyword extractor tool, marketing snippet, SEO content brief, personal knowledge management, smart notes, quick links, online organizer"
     />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -25,11 +25,11 @@
 
     <meta
       property="og:title"
-      content="ClipQuickly - AI-Powered URL Shortener"
+      content="ClipyQuickly - Smart Link & Content Organizer"
     />
     <meta
       property="og:description"
-      content="Shorten URLs, summarize content, and find high CPC keywords for your niche content."
+      content="Organize your links, summarize content, and extract key keywords for marketing, SEO, and personal knowledge management."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://clipquickly.netlify.app/" />
@@ -37,6 +37,7 @@
       property="og:image"
       content="https://clipquickly.netlify.app/og-image.png"
     />
+
     <style>
       :root {
         --primary-color: #3b82f6; /* Blue */
@@ -104,9 +105,19 @@
 
       .input-group {
         margin-bottom: 1.5rem;
+        text-align: left; /* Align labels */
       }
 
-      #longUrl {
+      .input-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        color: var(--text-color);
+      }
+
+      .input-group input[type="url"],
+      .input-group textarea,
+      .input-group input[type="text"] {
         width: calc(100% - 20px);
         padding: 12px;
         border: 1px solid var(--border-color);
@@ -114,9 +125,16 @@
         font-size: 1rem;
         outline: none;
         transition: border-color 0.3s;
+        box-sizing: border-box; /* Include padding in width */
       }
 
-      #longUrl:focus {
+      .input-group textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .input-group input:focus,
+      .input-group textarea:focus {
         border-color: var(--primary-color);
       }
 
@@ -130,6 +148,7 @@
         cursor: pointer;
         transition: background-color 0.3s, transform 0.2s;
         outline: none;
+        margin-top: 1rem; /* Space after input fields */
       }
 
       button:hover {
@@ -137,7 +156,7 @@
         transform: translateY(-2px);
       }
 
-      #result {
+      #clipsHistory {
         margin-top: 2rem;
         padding: 1.5rem;
         background-color: var(--bg-color);
@@ -145,31 +164,76 @@
         border: 1px dashed var(--border-color);
         text-align: left;
         word-break: break-all;
-        display: none; /* Hidden by default */
+        display: block; /* Always visible */
       }
 
-      #result p {
-        margin: 0.5rem 0;
-        line-height: 1.6;
-      }
-
-      #shortenedUrlDisplay {
-        font-weight: bold;
+      #clipsHistory h3 {
+        margin-top: 0;
         color: var(--primary-color);
-        font-size: 1.1rem;
-        display: block;
-        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
       }
 
-      #copyButton {
+      #clipsList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      #clipsList li {
+        background-color: #fff;
+        margin-bottom: 1rem;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        position: relative;
+      }
+
+      #clipsList li strong {
+        color: var(--secondary-color);
+      }
+
+      #clipsList li a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      #clipsList li a:hover {
+        text-decoration: underline;
+      }
+
+      .clip-actions {
+        margin-top: 0.8rem;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap; /* Allow buttons to wrap */
+      }
+
+      .clip-actions button {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+        margin-top: 0;
         background-color: var(--secondary-color);
-        margin-top: 1rem;
-        padding: 10px 20px;
-        font-size: 0.9rem;
       }
 
-      #copyButton:hover {
+      .clip-actions button:hover {
         background-color: #0e9b71;
+      }
+
+      .clip-actions button.copy-markdown {
+        background-color: #6c757d; /* Different color for markdown */
+      }
+
+      .clip-actions button.copy-markdown:hover {
+        background-color: #5a6268;
+      }
+
+      .clip-actions button.delete-clip {
+        background-color: #dc3545; /* Red for delete */
+      }
+
+      .clip-actions button.delete-clip:hover {
+        background-color: #c82333;
       }
 
       .info-section {
@@ -232,271 +296,248 @@
   <body>
     <header>
       <h1>ClipQuickly</h1>
-      <p>AI-Powered URL Shortener for Niche Content & SEO</p>
+      <p>Smart Link & Content Organizer</p>
     </header>
 
     <main>
       <div class="container">
-        <h2>Shorten Your URL & Get Key Insights</h2>
+        <h2>Organize Your Links & Insights</h2>
         <div class="input-group">
+          <label for="longUrl">Original Link:</label>
           <input
             type="url"
             id="longUrl"
-            placeholder="Enter your long URL here (e.g., https://example.com/your-niche-article)"
+            placeholder="e.g., https://example.com/your-niche-article"
             required
           />
         </div>
-        <button id="shortenBtn">Shorten & Analyze</button>
+        <div class="input-group">
+          <label for="clipTitle">Clip Title (Optional):</label>
+          <input
+            type="text"
+            id="clipTitle"
+            placeholder="A concise title for your clip"
+          />
+        </div>
+        <div class="input-group">
+          <label for="clipSummary">Your Summary:</label>
+          <textarea
+            id="clipSummary"
+            placeholder="Summarize the key points (1-2 sentences)"
+            required
+          ></textarea>
+        </div>
+        <div class="input-group">
+          <label for="clipKeywords"
+            >Key Keywords (comma-separated, max 5):</label
+          >
+          <input
+            type="text"
+            id="clipKeywords"
+            placeholder="e.g., NicheMarketing, SEO, ContentStrategy"
+          />
+        </div>
+        <button id="createClipBtn">Create Clip</button>
 
-        <div id="result">
-          <p>
-            <strong>Shortened URL:</strong>
-            <span id="shortenedUrlDisplay"></span>
-          </p>
-          <button id="copyButton">Copy URL</button>
-          <p id="summarizedContent" style="display: none">
-            <strong>Content Summary:</strong> Loading...
-          </p>
-          <p id="extractedKeywords" style="display: none">
-            <strong>High CPC Keywords:</strong> Loading...
-          </p>
+        <div id="clipsHistory">
+          <h3>Your Recent Clips</h3>
+          <ul id="clipsList"></ul>
         </div>
       </div>
 
       <div class="info-section">
-        <h3>Why Use ClipQuickly?</h3>
+        <h3>Why Use QuickClip Notes?</h3>
         <ul>
           <li>
-            <strong>Boost SEO:</strong> Get optimized links for your niche
-            content.
+            <strong>Streamline Information:</strong> Organize important links
+            and their core insights in one place.
           </li>
           <li>
-            <strong>AI-Powered Summaries:</strong> Instantly understand the core
-            of any article.
+            <strong>Custom Summaries:</strong> Craft your own concise summaries
+            for quick reference.
           </li>
           <li>
-            <strong>High CPC Keywords:</strong> Discover lucrative keywords for
-            your content and ads.
+            <strong>Relevant Keywords:</strong> Add key terms for better content
+            categorization and future use.
           </li>
           <li>
-            <strong>Simple & Fast:</strong> Shorten URLs in seconds with no
-            complex features.
+            <strong>Easy Sharing:</strong> Generate shareable text or Markdown
+            snippets for any platform.
           </li>
           <li>
-            <strong>Persistent History:</strong> Your past short URLs are saved
-            in your browser (local storage).
+            <strong>Persistent History:</strong> All your clips are saved
+            securely in your browser's local storage.
           </li>
         </ul>
       </div>
     </main>
 
-    <footer>&copy; 2025 ClipQuickly. All rights reserved.</footer>
+    <footer>&copy; 2025 QuickClip Notes. All rights reserved.</footer>
 
     <script>
-      const shortenBtn = document.getElementById("shortenBtn");
+      const createClipBtn = document.getElementById("createClipBtn");
       const longUrlInput = document.getElementById("longUrl");
-      const resultDiv = document.getElementById("result");
-      const shortenedUrlDisplay = document.getElementById(
-        "shortenedUrlDisplay"
-      );
-      const copyButton = document.getElementById("copyButton");
-      const summarizedContent = document.getElementById("summarizedContent");
-      const extractedKeywords = document.getElementById("extractedKeywords");
+      const clipTitleInput = document.getElementById("clipTitle");
+      const clipSummaryInput = document.getElementById("clipSummary");
+      const clipKeywordsInput = document.getElementById("clipKeywords");
+      const clipsList = document.getElementById("clipsList");
 
-      // Function to generate a random short code (for demonstration)
-      function generateShortCode(length = 7) {
-        const characters =
-          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        let result = "";
-        for (let i = 0; i < length; i++) {
-          result += characters.charAt(
-            Math.floor(Math.random() * characters.length)
+      // Function to generate a unique ID for each clip
+      function generateClipId() {
+        return (
+          Date.now().toString(36) + Math.random().toString(36).substr(2, 9)
+        );
+      }
+
+      // Save clip to Local Storage
+      function saveClipToLocalStorage(clip) {
+        let clips = JSON.parse(localStorage.getItem("quickClipNotes")) || [];
+        clips.unshift(clip); // Add new clip to the beginning
+        localStorage.setItem("quickClipNotes", JSON.stringify(clips));
+        displayClips(); // Re-render the list
+      }
+
+      // Delete clip from Local Storage
+      function deleteClipFromLocalStorage(id) {
+        let clips = JSON.parse(localStorage.getItem("quickClipNotes")) || [];
+        clips = clips.filter((clip) => clip.id !== id);
+        localStorage.setItem("quickClipNotes", JSON.stringify(clips));
+        displayClips(); // Re-render the list
+      }
+
+      // Display clips from Local Storage
+      function displayClips() {
+        let clips = JSON.parse(localStorage.getItem("quickClipNotes")) || [];
+        clipsList.innerHTML = ""; // Clear current list
+
+        if (clips.length === 0) {
+          clipsList.innerHTML = "<li>No clips yet. Create one above!</li>";
+          return;
+        }
+
+        clips.forEach((clip) => {
+          const li = document.createElement("li");
+          const keywordsHtml = clip.keywords
+            .map((kw) => `#${kw.trim()}`)
+            .join(" ");
+          const displayTitle =
+            clip.title || clip.summary.substring(0, 50) + "...";
+
+          li.innerHTML = `
+                    <h4>${displayTitle}</h4>
+                    <p>🔗 Original Link: <a href="${clip.url}" target="_blank" rel="noopener noreferrer">${clip.url}</a></p>
+                    <p>📝 Summary: ${clip.summary}</p>
+                    <p>🏷️ Keywords: ${keywordsHtml}</p>
+                    <div class="clip-actions">
+                        <button data-id="${clip.id}" class="copy-text-btn">Copy Text</button>
+                        <button data-id="${clip.id}" class="copy-markdown-btn">Copy Markdown</button>
+                        <button data-id="${clip.id}" class="delete-clip">Delete</button>
+                    </div>
+                `;
+          clipsList.appendChild(li);
+        });
+
+        // Add event listeners for new copy/delete buttons
+        document.querySelectorAll(".copy-text-btn").forEach((button) => {
+          button.addEventListener("click", (event) =>
+            copyClipToClipboard(event.target.dataset.id, "text")
           );
-        }
-        return result;
-      }
-
-      // Save to Local Storage (Simple key-value pair for demonstration)
-      function saveToLocalStorage(longUrl, shortUrl, summary, keywords) {
-        const data = {
-          longUrl,
-          shortUrl,
-          summary,
-          keywords,
-          timestamp: new Date().toISOString(),
-        };
-        let history =
-          JSON.parse(localStorage.getItem("clipQuicklyHistory")) || [];
-        history.unshift(data); // Add to the beginning
-        localStorage.setItem(
-          "clipQuicklyHistory",
-          JSON.stringify(history.slice(0, 10))
-        ); // Keep last 10
-        displayHistory(); // Update history display
-      }
-
-      // Display History (Simple display below the main shortener)
-      function displayHistory() {
-        let history =
-          JSON.parse(localStorage.getItem("clipQuicklyHistory")) || [];
-        let historyContainer = document.getElementById("historyContainer");
-        if (!historyContainer) {
-          historyContainer = document.createElement("div");
-          historyContainer.id = "historyContainer";
-          historyContainer.className = "info-section";
-          historyContainer.innerHTML =
-            '<h3>Your Recent Short URLs</h3><ul id="historyList"></ul>';
-          main.appendChild(historyContainer); // Append to main content
-        }
-        const historyList = document.getElementById("historyList");
-        historyList.innerHTML = "";
-        if (history.length === 0) {
-          historyList.innerHTML = "<li>No history yet. Shorten a URL!</li>";
-        } else {
-          history.forEach((item) => {
-            const li = document.createElement("li");
-            li.innerHTML = `<strong>Original:</strong> <a href="${
-              item.longUrl
-            }" target="_blank" rel="noopener noreferrer">${item.longUrl}</a><br>
-                                    <strong>Shortened:</strong> <a href="${
-                                      item.shortUrl
-                                    }" target="_blank" rel="noopener noreferrer">${
-              item.shortUrl
-            }</a><br>
-                                    ${
-                                      item.summary
-                                        ? `<strong>Summary:</strong> ${item.summary}<br>`
-                                        : ""
-                                    }
-                                    ${
-                                      item.keywords
-                                        ? `<strong>Keywords:</strong> ${item.keywords.join(
-                                            ", "
-                                          )}<br>`
-                                        : ""
-                                    }`;
-            historyList.appendChild(li);
+        });
+        document.querySelectorAll(".copy-markdown-btn").forEach((button) => {
+          button.addEventListener("click", (event) =>
+            copyClipToClipboard(event.target.dataset.id, "markdown")
+          );
+        });
+        document.querySelectorAll(".delete-clip").forEach((button) => {
+          button.addEventListener("click", (event) => {
+            if (confirm("Are you sure you want to delete this clip?")) {
+              deleteClipFromLocalStorage(event.target.dataset.id);
+            }
           });
-        }
+        });
       }
 
-      shortenBtn.addEventListener("click", async () => {
-        const longUrl = longUrlInput.value.trim();
-        if (!longUrl) {
-          alert("Please enter a URL.");
+      // Copy clip data to clipboard
+      function copyClipToClipboard(id, format) {
+        let clips = JSON.parse(localStorage.getItem("quickClipNotes")) || [];
+        const clipToCopy = clips.find((clip) => clip.id === id);
+
+        if (!clipToCopy) {
+          alert("Clip not found!");
+          return;
+        }
+
+        const keywordsFormatted = clipToCopy.keywords
+          .map((kw) => `#${kw.trim()}`)
+          .join(" ");
+        const titleToUse =
+          clipToCopy.title || `Clip from ${new URL(clipToCopy.url).hostname}`; // Fallback title
+
+        let contentToCopy = "";
+        if (format === "text") {
+          contentToCopy = `${titleToUse}\nOriginal Link: ${clipToCopy.url}\nSummary: ${clipToCopy.summary}\nKeywords: ${keywordsFormatted}`;
+        } else if (format === "markdown") {
+          contentToCopy = `### ${titleToUse}\n🔗 Original Link: [${clipToCopy.url}](${clipToCopy.url})\n📝 Summary: ${clipToCopy.summary}\n🏷️ Keywords: ${keywordsFormatted}`;
+        }
+
+        navigator.clipboard
+          .writeText(contentToCopy)
+          .then(() => {
+            alert(`Clip copied as ${format} to clipboard!`);
+          })
+          .catch((err) => {
+            console.error("Failed to copy: ", err);
+            alert("Failed to copy clip. Please try again.");
+          });
+      }
+
+      createClipBtn.addEventListener("click", () => {
+        const url = longUrlInput.value.trim();
+        const title = clipTitleInput.value.trim();
+        const summary = clipSummaryInput.value.trim();
+        const keywordsRaw = clipKeywordsInput.value.trim();
+
+        if (!url || !summary) {
+          alert("Please enter at least a URL and a Summary.");
           return;
         }
 
         // Basic URL validation
         try {
-          new URL(longUrl);
+          new URL(url);
         } catch (e) {
           alert("Please enter a valid URL.");
           return;
         }
 
-        // Simulate API call for URL shortening and AI analysis
-        // In a real application, this would be an actual fetch() call to your backend API
-        shortenBtn.textContent = "Processing...";
-        shortenBtn.disabled = true;
-        resultDiv.style.display = "none";
-        summarizedContent.style.display = "none";
-        extractedKeywords.style.display = "none";
+        const keywords = keywordsRaw
+          ? keywordsRaw
+              .split(",")
+              .map((kw) => kw.trim())
+              .filter((kw) => kw !== "")
+              .slice(0, 5)
+          : [];
 
-        // Placeholder for AI API call
-        // You would replace this with an actual API call to a summarization/keyword extraction service
-        // For front-end only, this is a mock-up.
-        const simulatedShortUrl = `https://clipquickly.netlify.app/${generateShortCode()}`;
-        let simulatedSummary = "Analyzing content...";
-        let simulatedKeywords = ["Analyzing content..."];
+        const newClip = {
+          id: generateClipId(),
+          url: url,
+          title: title,
+          summary: summary,
+          keywords: keywords,
+          timestamp: new Date().toISOString(),
+        };
 
-        try {
-          // Simulate content fetching and AI analysis
-          // In a real scenario, you'd send the longUrl to your backend which then
-          // fetches content and calls an external AI API (e.g., OpenAI, Google Cloud AI)
-          const response = await fetch(
-            `https://api.allorigins.win/get?url=${encodeURIComponent(longUrl)}`
-          ); // Using a proxy to bypass CORS for demonstration
-          const data = await response.json();
-          const articleContent = data.contents; // This will contain the HTML content of the URL
+        saveClipToLocalStorage(newClip);
 
-          // Very basic, client-side "AI" simulation (replace with real AI API)
-          // For a proper solution, you'd need a backend to parse content and call AI APIs
-          if (articleContent) {
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = articleContent;
-            const textContent = tempDiv.innerText || tempDiv.textContent;
-
-            // Simple mock summary (first few sentences)
-            simulatedSummary =
-              textContent.substring(0, Math.min(textContent.length, 150)) +
-              "...";
-
-            // Simple mock keywords (split by space, take some common words)
-            const words = textContent.toLowerCase().match(/\b\w+\b/g) || [];
-            const wordFreq = {};
-            words.forEach((word) => {
-              if (
-                word.length > 3 &&
-                !["the", "and", "for", "with", "from", "that", "this"].includes(
-                  word
-                )
-              ) {
-                wordFreq[word] = (wordFreq[word] || 0) + 1;
-              }
-            });
-            const sortedWords = Object.entries(wordFreq).sort(
-              ([, a], [, b]) => b - a
-            );
-            simulatedKeywords = sortedWords.slice(0, 5).map(([word]) => word);
-          } else {
-            simulatedSummary = "Could not fetch content for summarization.";
-            simulatedKeywords = ["N/A"];
-          }
-
-          shortenedUrlDisplay.textContent = simulatedShortUrl;
-          summarizedContent.textContent = `Content Summary: ${simulatedSummary}`;
-          extractedKeywords.textContent = `High CPC Keywords: ${simulatedKeywords.join(
-            ", "
-          )}`;
-
-          resultDiv.style.display = "block";
-          summarizedContent.style.display = "block";
-          extractedKeywords.style.display = "block";
-
-          saveToLocalStorage(
-            longUrl,
-            simulatedShortUrl,
-            simulatedSummary,
-            simulatedKeywords
-          );
-        } catch (error) {
-          console.error("Error:", error);
-          shortenedUrlDisplay.textContent =
-            "Error shortening URL or analyzing content. Please try again.";
-          summarizedContent.style.display = "none";
-          extractedKeywords.style.display = "none";
-          resultDiv.style.display = "block";
-        } finally {
-          shortenBtn.textContent = "Shorten & Analyze";
-          shortenBtn.disabled = false;
-        }
+        // Clear inputs
+        longUrlInput.value = "";
+        clipTitleInput.value = "";
+        clipSummaryInput.value = "";
+        clipKeywordsInput.value = "";
       });
 
-      copyButton.addEventListener("click", () => {
-        const urlToCopy = shortenedUrlDisplay.textContent;
-        navigator.clipboard
-          .writeText(urlToCopy)
-          .then(() => {
-            alert("Shortened URL copied to clipboard!");
-          })
-          .catch((err) => {
-            console.error("Failed to copy: ", err);
-          });
-      });
-
-      // Initialize history display on load
-      document.addEventListener("DOMContentLoaded", displayHistory);
+      // Initialize display on load
+      document.addEventListener("DOMContentLoaded", displayClips);
     </script>
   </body>
 </html>
